@@ -1,0 +1,41 @@
+﻿@model List<WebApplication1.Entities.Site>
+
+@{
+    ViewBag.Title = "Sites";
+}
+<h2>@ViewBag.Title.</h2>
+
+
+<ul>
+    @foreach (var site in Model)
+    {
+        <li>
+            <a class="sitename-link" style="width:80%" href="#">@site.Url</a><span style="float: right">@site.Name</span>
+            <ul style="display: none">
+                @if (site.Links.Any())
+                {
+                    foreach (var link in site.Links)
+                    {
+                        <li>@link.ValueUrl</li>
+                    }
+
+                }
+
+            </ul>
+        </li>
+    }
+</ul>
+
+@Html.ActionLink("Add new site!!!!!!!", "AddNewSite", "Home")
+
+@section scripts{
+    <script>
+        $(document).ready(function() {
+            $(".sitename-link").click(function(e) {
+                e.preventDefault();
+
+                $(this).siblings("ul").toggle();
+            });
+        });
+    </script>
+}

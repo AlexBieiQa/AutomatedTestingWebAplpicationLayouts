@@ -1,0 +1,82 @@
+﻿@model WebApplication1.Models.NewSiteModel
+
+@{
+    ViewBag.Title = "Add new Site";
+}
+
+<h2>title</h2>
+<div>@using (@Html.BeginForm("AddNewSite", "Home"))
+{
+
+    <div class="form-group">
+        @Html.LabelFor(z => z.Name)
+        @Html.TextBoxFor(z => z.Name)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(z => z.Url)
+        @Html.TextBoxFor(z => z.Url)
+    </div>
+
+    <ul id="links"></ul>
+    <span id="getlinks" class="btn-default btn">Get links</span>
+    <div style="margin-top: 20px;"><button class="btn-success btn">Save</button></div>
+
+}
+
+</div>   
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var links = [];
+
+
+
+
+            $("#getlinks").on("click",
+                function(e) {
+                    e.preventDefault();
+                    var siteUrl = $("#Url").val();
+
+
+                    $.ajax({
+                        url: "/Home/GetLinksFromSite",
+                        type: "GET",
+                        data: {"Url": siteUrl},
+                        success: function (result) {
+                            links = result;
+                            $("#links").empty();
+                            links.forEach(function (item) {
+                                $("#links").prepend("<li>" + item + "</li>");
+                            });
+
+                        },
+                        error: function (data) {
+                            alert('Something went wrong!'); //or whatever
+                        }
+                    });
+
+
+                });
+
+            $("form").on("submit",
+                function(e) {
+                    e.preventDefault();
+
+                    var name = $(this).find("#Name").val();
+                    var url = $(this).find("#Url").val();
+
+                    $.post("/Home/AddNewSite",
+                        { "Name": name, "Url": url, "Links": links  },
+                        function (result) {
+                            location.replace("/Home/Index");
+
+                        });
+                });
+        });
+
+    </script>
+}
