@@ -75,7 +75,8 @@ namespace WebApplication1.Controllers
             };
 
 
-            var links = db.Links.Select(z => new Link { ValueUrl = z.ValueUrl, Site = newSite}).ToList();
+            var links = model.Links.Select(z => new Link() {ValueUrl = z, Site = newSite}).ToList();
+
 
             //newSite.Links = new List<Link>();
             //newSite.Links.AddRange(links);
@@ -156,6 +157,8 @@ namespace WebApplication1.Controllers
             linkedPages.RemoveAll(u => u.EndsWith(".png"));
             linkedPages.RemoveAll(u => u.EndsWith(".bmp"));
             linkedPages.RemoveAll(u => u.EndsWith(".gif"));
+            linkedPages.RemoveAll(u => u.EndsWith(".rss"));
+            
 
 
 
