@@ -1,0 +1,12 @@
+﻿@model List<WebApplication1.Entities.Link>
+
+@{
+    ViewBag.Title = "SitePages";
+}
+
+<h2>SitePages</h2>
+@foreach (var link in Model)
+{
+    <li>@link.ValueUrl</li>
+}
+
