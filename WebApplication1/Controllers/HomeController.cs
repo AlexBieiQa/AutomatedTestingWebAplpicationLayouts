@@ -146,7 +146,20 @@ namespace WebApplication1.Controllers
                 }
 
                 stack.Pop();
+
             }
+            linkedPages.RemoveAll(u => u.EndsWith(".pdf"));
+            linkedPages.RemoveAll(u => u.EndsWith(".doc"));
+            linkedPages.RemoveAll(u => u.EndsWith(".docx"));
+            linkedPages.RemoveAll(u => u.EndsWith(".jpeg"));
+            linkedPages.RemoveAll(u => u.EndsWith(".jpg"));
+            linkedPages.RemoveAll(u => u.EndsWith(".png"));
+            linkedPages.RemoveAll(u => u.EndsWith(".bmp"));
+            linkedPages.RemoveAll(u => u.EndsWith(".gif"));
+
+
+
+
 
             return Json(linkedPages, JsonRequestBehavior.AllowGet);
         }
