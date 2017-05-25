@@ -203,6 +203,7 @@
     <Compile Include="Entities\Link.cs" />
     <Compile Include="Entities\Screenshot.cs" />
     <Compile Include="Entities\Site.cs" />
+    <Compile Include="Enums\StatusSitesEnum.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -217,6 +218,10 @@
     <Compile Include="Migrations\201705241339065_UserForSite.cs" />
     <Compile Include="Migrations\201705241339065_UserForSite.Designer.cs">
       <DependentUpon>201705241339065_UserForSite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705250855473_AddScreenBase64.cs" />
+    <Compile Include="Migrations\201705250855473_AddScreenBase64.Designer.cs">
+      <DependentUpon>201705250855473_AddScreenBase64.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -288,6 +293,7 @@
     <Content Include="Views\Home\Contact1.cshtml" />
     <Content Include="Views\Home\Sites.cshtml" />
     <Content Include="Views\Home\AddNewSite.cshtml" />
+    <Content Include="Views\Home\SitePages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -316,6 +322,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705241339065_UserForSite.resx">
       <DependentUpon>201705241339065_UserForSite.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705250855473_AddScreenBase64.resx">
+      <DependentUpon>201705250855473_AddScreenBase64.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
