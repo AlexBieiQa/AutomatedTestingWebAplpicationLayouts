@@ -108,3 +108,9 @@ C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplica
 C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.Init.resources
 C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.UserForSite.resources
 C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.AddScreenBase64.resources
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.AddSomeFields.resources
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\bin\WebDriver.dll
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\bin\WebDriver.Support.dll
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\bin\WebDriver.xml
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\bin\WebDriver.Support.xml
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.SashaProgger.resources

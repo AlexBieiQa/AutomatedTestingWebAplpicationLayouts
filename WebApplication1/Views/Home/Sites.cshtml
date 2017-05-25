@@ -12,15 +12,15 @@
             <td class="site-name">Site Name</td>
             <td class="site-url">Site Url</td>
             <td class="site-count">Count Of Pages</td>
-            <td class="site-result-link"></td>
-            <td class="site-screen-link"></td>
+            <td class="site-result-link">Result</td>
+            <td class="site-screen-link">Screenshot</td>
         </tr>
         <tr>
             <td class="site-name">@site.Name</td>
             <td class="site-url">@site.Url</td>
             <td class="site-count">@Html.ActionLink(site.CountOfPages.ToString(), "SitePages", new { SiteId = site.SiteId})</td>
-            <td class="site-result-link"></td>
-            <td class="site-screen-link"></td>
+            <td class="site-result-link">@Html.ActionLink("result link", "StartTest", new { SiteId = site.SiteId})</td>
+            <td class="site-screen-link">LinkToScreenshot</td>
         </tr>
     </table>
     @*<ul class="site-name">

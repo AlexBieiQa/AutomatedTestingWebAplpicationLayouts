@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Hangfire;
 using HtmlAgilityPack;
 using Microsoft.AspNet.Identity;
 using WebApplication1.Models;
 using WebApplication1.Entities;
+using WebApplication1.Helpers;
 
 namespace WebApplication1.Controllers
 {
@@ -85,6 +87,32 @@ namespace WebApplication1.Controllers
             db.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        public ActionResult StartTest(int SiteId)
+        {
+            var Site = db.Sites.FirstOrDefault(z => z.Id == SiteId);
+
+            if (Site == null)
+            {
+                return Json(new {success = false, message = "Site not found "}, JsonRequestBehavior.AllowGet);
+            }
+
+
+            var Test = new Test()
+            {
+                Site = Site, Date = DateTime.Now
+            };
+
+            db.Tests.Add(Test);
+            db.SaveChanges();
+
+            var testHelper = new TestsHelper();
+
+            BackgroundJob.Enqueue(() => testHelper.StartTest(Test.Id, Site.Id));
+
+            return Json(new {success = true}, JsonRequestBehavior.AllowGet);
         }
 
         [Authorize]

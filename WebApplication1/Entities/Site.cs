@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebApplication1.Enums;
 using WebApplication1.Models;
 
 namespace WebApplication1.Entities
@@ -12,9 +13,9 @@ namespace WebApplication1.Entities
         public string Name { get; set; }
         public string Url { get; set; }
         public ApplicationUser User { get; set; }
-
-
+        
         public virtual List<Screenshot> Screenshots { get; set; }
         public virtual List<Link> Links { get; set; }
+        public virtual List<Test> Tests { get; set; }
     }
 }

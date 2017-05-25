@@ -27,7 +27,7 @@ namespace WebApplication1.Models
 
         public DbSet<Screenshot> Screenshots { get; set; }
 
-
+        public DbSet<Test> Tests { get; set; }
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
