@@ -12,6 +12,7 @@ namespace WebApplication1.Entities
 
         public string ImgUrl { get; set; }
         public int Date { get; set; }
+        public string ScreenBase64 { get; set; }
 
 
     }

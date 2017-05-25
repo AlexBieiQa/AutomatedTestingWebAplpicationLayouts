@@ -29,9 +29,25 @@ namespace WebApplication1.Controllers
             var userId = User.Identity.GetUserId();
             var sites = db.Sites.Where(z => z.User.Id == userId).ToList();
 
-            return View(sites);
+            var model = db.Sites.Select(s => new NewSiteModel
+            {
+                SiteId = s.Id,
+                Name = s.Name,
+                CountOfPages = s.Links.Count,
+                Url = s.Url
+
+            }).ToList();
+
+            return View(model);
         }
 
+        [Authorize]
+        public ActionResult SitePages(int SiteId)
+        {
+            var links = db.Links.Where(z => z.Site.Id == SiteId).ToList();
+            
+            return View(links);
+        }
 
 
         [HttpGet]
@@ -57,7 +73,7 @@ namespace WebApplication1.Controllers
             };
 
 
-            var links = model.Links.Select(z => new Link() {ValueUrl = z, Site = newSite}).ToList();
+            var links = db.Links.Select(z => new Link { ValueUrl = z.ValueUrl, Site = newSite}).ToList();
 
             //newSite.Links = new List<Link>();
             //newSite.Links.AddRange(links);
@@ -106,5 +122,14 @@ namespace WebApplication1.Controllers
 
             return Json(linkedPages, JsonRequestBehavior.AllowGet);
         }
+
+        //[Authorize]
+        //public ActionResult TakeUrlScreenshots()
+        //{
+            
+        //}
+
+
     }
+
 }

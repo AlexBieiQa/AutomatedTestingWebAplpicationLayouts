@@ -1,14 +1,30 @@
-﻿@model List<WebApplication1.Entities.Site>
+﻿@model List<WebApplication1.Models.NewSiteModel>
 
 @{
     ViewBag.Title = "Sites";
 }
 <h2>@ViewBag.Title.</h2>
 
+@foreach (var site in Model)
+{
+    <table class="sites">
+        <tr>
+            <td class="site-name">Site Name</td>
+            <td class="site-url">Site Url</td>
+            <td class="site-count">Count Of Pages</td>
+            <td class="site-result-link"></td>
+            <td class="site-screen-link"></td>
+        </tr>
+        <tr>
+            <td class="site-name">@site.Name</td>
+            <td class="site-url">@site.Url</td>
+            <td class="site-count">@Html.ActionLink(site.CountOfPages.ToString(), "SitePages", new { SiteId = site.SiteId})</td>
+            <td class="site-result-link"></td>
+            <td class="site-screen-link"></td>
+        </tr>
+    </table>
+    @*<ul class="site-name">
 
-<ul>
-    @foreach (var site in Model)
-    {
         <li>
             <a class="sitename-link" style="width:80%" href="#">@site.Url</a><span style="float: right">@site.Name</span>
             <ul style="display: none">
@@ -20,18 +36,16 @@
                     }
 
                 }
-
             </ul>
         </li>
-    }
-</ul>
-
+    </ul>*@
+}
 @Html.ActionLink("Add new site!!!!!!!", "AddNewSite", "Home")
 
 @section scripts{
     <script>
-        $(document).ready(function() {
-            $(".sitename-link").click(function(e) {
+        $(document).ready(function () {
+            $(".sitename-link").click(function (e) {
                 e.preventDefault();
 
                 $(this).siblings("ul").toggle();

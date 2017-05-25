@@ -107,3 +107,4 @@ C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplica
 C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.csproj.GenerateResource.Cache
 C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.Init.resources
 C:\Users\a.biei\documents\visual studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.UserForSite.resources
+C:\Users\a.biei\Documents\Visual Studio 2017\Projects\WebApplication1\WebApplication1\obj\Debug\WebApplication1.Migrations.AddScreenBase64.resources
