@@ -21,4 +21,11 @@ input,
 select,
 textarea {
     max-width: 280px;
+} 
+
+.loader{
+    display: block;
+    background: url("ripple.gif");
+    width: 46px;
+    height: 46px;
 }

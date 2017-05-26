@@ -4,43 +4,44 @@
     ViewBag.Title = "Sites";
 }
 <h2>@ViewBag.Title.</h2>
+<table class="sites">
+    <tr>
+        <td  width="100px" class="site-name">Site Name</td>
+        <td  width="160px" class="site-url">Site Url</td>
+        <td  width="120px" class="site-count">Pages count</td>
+        <td  width="100px" class="site-result-link">Result</td>
+        <td  width="100px" class="site-screen-link">Screenshot</td>
+    </tr>
+    @foreach (var site in Model)
+    {
 
-@foreach (var site in Model)
-{
-    <table class="sites">
         <tr>
-            <td class="site-name">Site Name</td>
-            <td class="site-url">Site Url</td>
-            <td class="site-count">Count Of Pages</td>
-            <td class="site-result-link">Result</td>
-            <td class="site-screen-link">Screenshot</td>
+            <td width="100px" class="site-name"><b>@site.Name</b></td>
+            <td width="160px" class="site-url">@site.Url</td>
+            <td width="120px" class="site-count">@Html.ActionLink(site.CountOfPages.ToString(), "SitePages", new { SiteId = site.SiteId })</td>
+            <td width="100px" class="site-result-link"><a class="show-tests" href="/Home/StartTest?SiteId=@site.SiteId">Test result</a></td>
+            <td width="100px"class="site-screen-link">LinkToScreenshot</td>
         </tr>
-        <tr>
-            <td class="site-name">@site.Name</td>
-            <td class="site-url">@site.Url</td>
-            <td class="site-count">@Html.ActionLink(site.CountOfPages.ToString(), "SitePages", new { SiteId = site.SiteId})</td>
-            <td class="site-result-link">@Html.ActionLink("result link", "StartTest", new { SiteId = site.SiteId})</td>
-            <td class="site-screen-link">LinkToScreenshot</td>
-        </tr>
-    </table>
-    @*<ul class="site-name">
 
-        <li>
-            <a class="sitename-link" style="width:80%" href="#">@site.Url</a><span style="float: right">@site.Name</span>
-            <ul style="display: none">
-                @if (site.Links.Any())
-                {
-                    foreach (var link in site.Links)
-                    {
-                        <li>@link.ValueUrl</li>
-                    }
+        @*<ul class="site-name">
 
-                }
-            </ul>
-        </li>
-    </ul>*@
-}
-@Html.ActionLink("Add new site!!!!!!!", "AddNewSite", "Home")
+                <li>
+                    <a class="sitename-link" style="width:80%" href="#">@site.Url</a><span style="float: right">@site.Name</span>
+                    <ul style="display: none">
+                        @if (site.Links.Any())
+                        {
+                            foreach (var link in site.Links)
+                            {
+                                <li>@link.ValueUrl</li>
+                            }
+
+                        }
+                    </ul>
+                </li>
+            </ul>*@
+    }
+</table>
+@Html.ActionLink("Add new site", "AddNewSite", "Home", new { @class = "btn-primary btn", @style="margin-top: 30px" })
 
 @section scripts{
     <script>
@@ -50,6 +51,18 @@
 
                 $(this).siblings("ul").toggle();
             });
+
+            $(".show-tests").click(function (e) {
+                e.preventDefault();
+
+                var url = $(this).attr('href');
+                $.get(url, function (result) {
+                    if (result.success)
+                        return location.replace(result.url);
+                    else
+                        alert(result.message);
+                })
+            })
         });
     </script>
 }
