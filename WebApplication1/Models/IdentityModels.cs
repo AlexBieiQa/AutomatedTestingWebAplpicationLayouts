@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using WebApplication1.Entities;
+using System.Collections.Generic;
 
 namespace WebApplication1.Models
 {
@@ -17,6 +18,8 @@ namespace WebApplication1.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+        public virtual List<Site> Sites { get; set; } = new List<Site>();
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

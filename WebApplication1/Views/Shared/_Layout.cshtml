@@ -25,10 +25,12 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Sites", "Sites", "Home")</li>
+                        <li>@Html.ActionLink("Jobs", "jobs/processing", "Hangfire")</li>
                     }
                     else
                     {
                         <li>@Html.ActionLink("Home", "Index", "Home")</li>
+
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
