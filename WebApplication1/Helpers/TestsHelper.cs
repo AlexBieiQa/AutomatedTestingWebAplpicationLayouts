@@ -22,6 +22,28 @@ namespace WebApplication1.Helpers
         public ApplicationDbContext db { get; set; } = new ApplicationDbContext();
 
 
+        private int StartHeight { get; set; }
+        private int BrowserHeight { get; set; }
+        private int StartWidth { get; set; }
+        private FirefoxDriver driver { get; set; }
+        private TimeSpan timespan { get; set; }
+        private IJavaScriptExecutor js { get; set; }
+
+
+
+        public TestsHelper()
+        {
+            timespan = TimeSpan.FromMinutes(100);
+
+            driver = new FirefoxDriver(FirefoxDriverService.CreateDefaultService(), new FirefoxOptions(), timespan);
+
+            StartHeight = driver.Manage().Window.Size.Height;
+            StartWidth = driver.Manage().Window.Size.Width;
+            js = (IJavaScriptExecutor)driver;
+
+            BrowserHeight = StartHeight - Convert.ToInt32(js.ExecuteScript(@"return window.innerHeight;"));
+        }
+
         public void StartTest(int testId, int siteId)
         {
             var site = db.Sites.ToList().FirstOrDefault(c => c.Id == siteId);
@@ -36,18 +58,15 @@ namespace WebApplication1.Helpers
             {
                 throw new Exception("No test");
             }
-            var timespan = TimeSpan.FromMinutes(100);
 
-            var driver = new FirefoxDriver(FirefoxDriverService.CreateDefaultService(), new FirefoxOptions(), timespan);
-
-            MD5 md5Hash = MD5.Create();
             foreach (var link in site.Links)
             {
 
-                InitDriver(driver, link);
+                InitDriver(driver, js, link);
                 OpenQA.Selenium.Screenshot screenshot = null;
 
 
+                //Getting the screenshot
                 try
                 {
                     screenshot = driver.TakeScreenshot();
@@ -59,7 +78,7 @@ namespace WebApplication1.Helpers
                     driver.Quit();
                     driver = new FirefoxDriver(FirefoxDriverService.CreateDefaultService(), new FirefoxOptions(),
                         timespan);
-                    InitDriver(driver, link);
+                    InitDriver(driver,  js, link);
                     screenshot = driver.TakeScreenshot();
 
                 }
@@ -69,7 +88,7 @@ namespace WebApplication1.Helpers
 
 
 
-                //screenshot.SaveAsFile("Test" + timestamp + ".png", ImageFormat.Png);
+                //Saving screenshot
                 var newScreenshot = new Entities.Screenshot()
                 {
                     Site = site,
@@ -81,87 +100,60 @@ namespace WebApplication1.Helpers
                 };
 
 
-
-                string hash = GetMd5Hash(md5Hash, screenshot.AsBase64EncodedString);
+                string hash = ExtensionMethods.GetMd5Hash(screenshot.AsBase64EncodedString);
 
                 newScreenshot.ScreenBase64 = hash;
 
                 db.Screenshots.Add(newScreenshot);
 
 
-                var guid = Guid.NewGuid().ToString();
+                var imageName  = Guid.NewGuid().ToString();
 
                 var path =
                     Path.Combine(
                         HostingEnvironment.MapPath(
                             Path.Combine(new string[]
                             {
-                                    "~/App_LocalResources/Screenshots/", site.Id.ToString(),
-                                    test.Date.ToString("yyyyMMddTHHmmss"), guid + ".png"
+                                    "~/Content/Screenshots/", site.Id.ToString(),
+                                    test.Date.ToString("yyyyMMddTHHmmss"), imageName + ".png"
                             })));
                 (new FileInfo(path)).Directory.Create();
 
                 newScreenshot.ImgUrl =
                     Path.Combine(new string[]
-                        {site.Id.ToString(), test.Date.ToString("yyyyMMddTHHmmss"), guid + ".png"});
+                        {site.Id.ToString(), test.Date.ToString("yyyyMMddTHHmmss"), imageName + ".png"});
 
-                db.SaveChanges();
                 File.WriteAllBytes(path, screenshot.AsByteArray);
-
+                db.SaveChanges();
 
             }
 
 
 
         }
-        public void InitDriver(FirefoxDriver driver, Link link)
+
+
+        //Driver resize method
+        public void InitDriver(FirefoxDriver driver, IJavaScriptExecutor js, Link link)
         {
-
-            var height = driver.Manage().Window.Size.Height;
-            var width = driver.Manage().Window.Size.Width;
-            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-
-            //var browserHeight = height - Convert.ToInt32((string)js.ExecuteScript(@"return window.innerHeight + '';"));
-
-
             driver.Url = link.ValueUrl;
+            driver.Manage().Window.Size = new Size(StartWidth+1, StartHeight+1);
 
-
-            //string maxSiteHeight = (string)js.ExecuteScript(@"
-            //        return Math.max(
-            //            document.documentElement.clientHeight,
-            //            document.body.scrollHeight,
-            //            document.documentElement.scrollHeight,
-            //            document.body.offsetHeight,
-            //            document.documentElement.offsetHeight
-            //        ) +'';
-            //    ");
-
-            //var setHeight = Convert.ToInt32(maxSiteHeight) + browserHeight;
-            //driver.Manage().Window.Size = new Size(width, setHeight);
+            var maxSiteHeight = Convert.ToInt32(js.ExecuteScript(@"
+                    return Math.max(
+                        document.documentElement.clientHeight,
+                        document.body.scrollHeight,
+                        document.documentElement.scrollHeight,
+                        document.body.offsetHeight,
+                        document.documentElement.offsetHeight
+                    );
+                "));
+            
+            var setHeight = Convert.ToInt32(maxSiteHeight) + BrowserHeight;
+            driver.Manage().Window.Size = new Size(StartWidth, setHeight);
         }
 
-        public string GetMd5Hash(MD5 md5Hash, string input)
-        {
-
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            StringBuilder sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data 
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
-        }
-
+       
     }
 
 

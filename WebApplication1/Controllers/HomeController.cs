@@ -29,9 +29,12 @@ namespace WebApplication1.Controllers
         public ActionResult Sites()
         {
             var userId = User.Identity.GetUserId();
-            var sites = db.Sites.Where(z => z.User.Id == userId).ToList();
 
-            var model = db.Sites.Select(s => new NewSiteModel
+            var user = ExtensionMethods.GetUserById(userId, db);
+            if (user == null)
+                return Content("User not found");
+
+            var model = user.Sites.Select(s => new NewSiteModel
             {
                 SiteId = s.Id,
                 Name = s.Name,
@@ -113,16 +116,20 @@ namespace WebApplication1.Controllers
 
             BackgroundJob.Enqueue(() => testHelper.StartTest(Test.Id, Site.Id));
 
-            return Json(new {success = true}, JsonRequestBehavior.AllowGet);
+            return Json(new {success = true, url = "/hangfire/jobs/processing" }, JsonRequestBehavior.AllowGet);
         }
 
         [Authorize]
         public ActionResult GetLinksFromSite(string Url)
         {
+            if (String.IsNullOrEmpty(Url))
+                return Json(new { success = false, message = "Empty url" });
+
             if (!Url.Contains("http"))
             {
                 Url = "https://" + Url;
             }
+
             var siteUrl = Url;
             var doc = new HtmlWeb().Load(siteUrl);
 
@@ -134,17 +141,26 @@ namespace WebApplication1.Controllers
             var stack = new Stack<string>(linkedPages);
             while (stack.Any())
             {
-                var tempDoc = new HtmlWeb().Load(stack.First());
-                var additionalLinks = tempDoc.DocumentNode.Descendants("a")
-                    .Select(a => a.GetAttributeValue("href", null))
-                    .Where(u => !String.IsNullOrEmpty(u) && u.Contains(siteUrl) && linkedPages.All(k => k != u));
-                linkedPages.AddRange(additionalLinks);
-
-
-                foreach (var link in additionalLinks)
+                try
                 {
-                    stack.Push(link);
+                    var tempDoc = new HtmlWeb().Load(stack.First());
+                    var additionalLinks = tempDoc.DocumentNode.Descendants("a")
+                        .Select(a => a.GetAttributeValue("href", null))
+                        .Where(u => !String.IsNullOrEmpty(u) && u.Contains(siteUrl) && linkedPages.All(k => k != u));
+                    linkedPages.AddRange(additionalLinks);
+
+
+                    foreach (var link in additionalLinks)
+                    {
+                        stack.Push(link);
+                    }
                 }
+                catch(Exception ex)
+                {
+                    // ignored
+                }
+
+
 
                 stack.Pop();
 
@@ -158,7 +174,9 @@ namespace WebApplication1.Controllers
             linkedPages.RemoveAll(u => u.EndsWith(".bmp"));
             linkedPages.RemoveAll(u => u.EndsWith(".gif"));
             linkedPages.RemoveAll(u => u.EndsWith(".rss"));
-            
+            linkedPages.RemoveAll(u => u.EndsWith(".gzip"));
+            linkedPages.RemoveAll(u => u.EndsWith(".zip"));
+
 
 
 
