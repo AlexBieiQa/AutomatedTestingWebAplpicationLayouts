@@ -315,6 +315,7 @@
     <Content Include="Views\Home\AddNewSite.cshtml" />
     <Content Include="Views\Home\SitePages.cshtml" />
     <Content Include="Views\Home\Screenshots.cshtml" />
+    <Content Include="Views\Home\Tests.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

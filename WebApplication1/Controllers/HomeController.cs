@@ -56,6 +56,21 @@ namespace WebApplication1.Controllers
             return View(links);
         }
 
+        [Authorize]
+        public ActionResult Tests()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var user = ExtensionMethods.GetUserById(userId, db);
+            if (user == null)
+                return Content("User not found");
+
+            var sites = user.Sites;
+
+
+            return View(sites);
+
+        }
 
         [Authorize]
         public ActionResult Screenshots(int? SiteId)
@@ -115,13 +130,28 @@ namespace WebApplication1.Controllers
         }
 
         [Authorize]
-        public ActionResult StartTest(int SiteId)
+        public ActionResult StartTest(int SiteId, ScreenshotType type)
         {
             var Site = db.Sites.FirstOrDefault(z => z.Id == SiteId);
 
             if (Site == null)
             {
                 return Json(new { success = false, message = "Site not found " }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (type == ScreenshotType.New)
+            {
+                if (!Site.Tests.Any(z => z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference)))
+                {
+                    return Json(new {success = false, message = "You need to run reference test first"},
+                        JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                var refTests = Site.Tests.Where(z => z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference));
+                db.Tests.RemoveRange(refTests);
+                db.SaveChanges();
             }
 
 
@@ -136,7 +166,7 @@ namespace WebApplication1.Controllers
 
             var testHelper = new TestsHelper();
 
-            BackgroundJob.Enqueue(() => testHelper.StartTest(Test.Id, Site.Id));
+            BackgroundJob.Enqueue(() => testHelper.StartTest(Test.Id, Site.Id, type));
 
             return Json(new { success = true, url = "/hangfire/jobs/processing" }, JsonRequestBehavior.AllowGet);
         }
@@ -152,13 +182,20 @@ namespace WebApplication1.Controllers
                 Url = "https://" + Url;
             }
 
+            if (Url.EndsWith("/"))
+                Url = Url.Substring(0, Url.Length - 1);
+
             var siteUrl = Url;
             var doc = new HtmlWeb().Load(siteUrl);
 
 
             var linkedPages = (doc.DocumentNode.Descendants("a")
                 .Select(a => a.GetAttributeValue("href", null))
-                .Where(u => !String.IsNullOrEmpty(u) && u.Contains(siteUrl))).ToList();
+                .Where(u => !String.IsNullOrEmpty(u) && (u.Contains(siteUrl) || u.StartsWith("/")))).ToList();
+
+
+                   
+
 
             var stack = new Stack<string>(linkedPages);
             while (stack.Any())
@@ -168,7 +205,7 @@ namespace WebApplication1.Controllers
                     var tempDoc = new HtmlWeb().Load(stack.First());
                     var additionalLinks = tempDoc.DocumentNode.Descendants("a")
                         .Select(a => a.GetAttributeValue("href", null))
-                        .Where(u => !String.IsNullOrEmpty(u) && u.Contains(siteUrl) && linkedPages.All(k => k != u));
+                        .Where(u => !String.IsNullOrEmpty(u) && (u.Contains(siteUrl) || u.StartsWith("/")) && linkedPages.All(k => k != u));
                     linkedPages.AddRange(additionalLinks);
 
 
@@ -181,8 +218,6 @@ namespace WebApplication1.Controllers
                 {
                     // ignored
                 }
-
-
 
                 stack.Pop();
 
@@ -198,13 +233,15 @@ namespace WebApplication1.Controllers
             linkedPages.RemoveAll(u => u.EndsWith(".rss"));
             linkedPages.RemoveAll(u => u.EndsWith(".gzip"));
             linkedPages.RemoveAll(u => u.EndsWith(".zip"));
+            
+            if(linkedPages.All(z => z != siteUrl))
+                linkedPages.Add(siteUrl);
 
+            var list = linkedPages.Where(z => !z.StartsWith("/")).ToList();
 
+            list.AddRange(linkedPages.Where(k => k.StartsWith("/")).Select(z => siteUrl + z));
 
-
-
-
-            return Json(linkedPages, JsonRequestBehavior.AllowGet);
+            return Json(list, JsonRequestBehavior.AllowGet);
         }
 
         //[Authorize]

@@ -20,7 +20,7 @@
             <td width="100px" class="site-name"><b>@site.Name</b></td>
             <td width="160px" class="site-url">@site.Url</td>
             <td width="120px" class="site-count">@Html.ActionLink(site.CountOfPages.ToString(), "SitePages", new { SiteId = site.SiteId })</td>
-            <td width="100px" class="site-result-link"><a class="show-tests" href="/Home/StartTest?SiteId=@site.SiteId">Test result</a></td>
+            <td width="100px" class="site-result-link"><a class="show-tests" href="/Home/Tests">Test result</a></td>
             <td width="100px"class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.SiteId })</td>
         </tr>
 
@@ -53,17 +53,6 @@
                 $(this).siblings("ul").toggle();
             });
 
-            $(".show-tests").click(function (e) {
-                e.preventDefault();
-
-                var url = $(this).attr('href');
-                $.get(url, function (result) {
-                    if (result.success)
-                        return location.replace(result.url);
-                    else
-                        alert(result.message);
-                })
-            })
         });
     </script>
 }

@@ -44,7 +44,7 @@ namespace WebApplication1.Helpers
             BrowserHeight = StartHeight - Convert.ToInt32(js.ExecuteScript(@"return window.innerHeight;"));
         }
 
-        public void StartTest(int testId, int siteId)
+        public void StartTest(int testId, int siteId, ScreenshotType type)
         {
             var site = db.Sites.ToList().FirstOrDefault(c => c.Id == siteId);
 
@@ -94,9 +94,7 @@ namespace WebApplication1.Helpers
                     Site = site,
                     Test = test,
                     Date = DateTime.Now,
-                    ScreenStatus = ScreenshotStatus.Valid,
-                    ScreenType = ScreenshotType.Reference
-
+                    ScreenType = type
                 };
 
 
@@ -104,9 +102,8 @@ namespace WebApplication1.Helpers
 
                 newScreenshot.ScreenBase64 = hash;
 
-                db.Screenshots.Add(newScreenshot);
 
-                link.Screenshot = newScreenshot;
+ 
                 var imageName  = Guid.NewGuid().ToString();
 
                 var path =
@@ -124,11 +121,30 @@ namespace WebApplication1.Helpers
                         {site.Id.ToString(), test.Date.ToString("yyyyMMddTHHmmss"), imageName + ".png"});
 
                 File.WriteAllBytes(path, screenshot.AsByteArray);
+
+                if (newScreenshot.ScreenType == ScreenshotType.Reference)
+                {
+                    newScreenshot.ScreenStatus = ScreenshotStatus.Valid;
+                    link.Screenshot = newScreenshot;
+                }
+                else
+                {
+                    if (link.Screenshot.ScreenBase64 != newScreenshot.ScreenBase64)
+                        newScreenshot.ScreenStatus = ScreenshotStatus.Invalid;
+                    else
+                        newScreenshot.ScreenStatus = ScreenshotStatus.Valid;
+                }
+
+
+                db.Screenshots.Add(newScreenshot);
+
+
+
                 db.SaveChanges();
 
             }
 
-
+            driver.Quit();
 
         }
 

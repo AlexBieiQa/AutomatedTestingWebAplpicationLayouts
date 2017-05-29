@@ -25,6 +25,7 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Sites", "Sites", "Home")</li>
+                        <li>@Html.ActionLink("Tests", "Tests", "Home")</li>
                         <li>@Html.ActionLink("Jobs", "jobs/processing", "Hangfire")</li>
                     }
                     else
