@@ -106,7 +106,7 @@ namespace WebApplication1.Helpers
 
                 db.Screenshots.Add(newScreenshot);
 
-
+                link.Screenshot = newScreenshot;
                 var imageName  = Guid.NewGuid().ToString();
 
                 var path =

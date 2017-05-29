@@ -82,15 +82,15 @@
 
             $("form").on("submit",
                 function(e) {
-                    e.preventDefault();
-
+                    e.preventDefault();                 
                     var name = $(this).find("#Name").val();
                     var url = $(this).find("#Url").val();
 
                     $.post("/Home/AddNewSite",
-                        { "Name": name, "Url": url, "Links": links  },
+                        { "Name": name, "Url": url, "Links": links },
                         function (result) {
                             location.replace("/Home/Index");
+
 
                         });
                 });

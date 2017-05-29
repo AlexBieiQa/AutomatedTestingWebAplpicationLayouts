@@ -8,6 +8,7 @@ using HtmlAgilityPack;
 using Microsoft.AspNet.Identity;
 using WebApplication1.Models;
 using WebApplication1.Entities;
+using WebApplication1.Enums;
 using WebApplication1.Helpers;
 
 namespace WebApplication1.Controllers
@@ -19,7 +20,7 @@ namespace WebApplication1.Controllers
 
         public ActionResult Index()
         {
-            if(User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated)
                 return RedirectToAction("Sites");
             return View();
         }
@@ -47,10 +48,30 @@ namespace WebApplication1.Controllers
         }
 
         [Authorize]
-        public ActionResult SitePages(int SiteId)
+        public ActionResult SitePages(int? SiteId)
         {
+
             var links = db.Links.Where(z => z.Site.Id == SiteId).ToList();
-            
+
+            return View(links);
+        }
+
+
+        [Authorize]
+        public ActionResult Screenshots(int? SiteId)
+        {
+            //var userId = User.Identity.GetUserId();
+
+            //var user = ExtensionMethods.GetUserById(userId, db);
+            //if (user == null)
+            //    return Content("User not found");
+            if (SiteId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            var links = db.Links.Where(z => z.Site.Id == SiteId && z.Screenshot != null && z.Screenshot.ScreenType == ScreenshotType.Reference).ToList();
+
+
             return View(links);
         }
 
@@ -78,7 +99,7 @@ namespace WebApplication1.Controllers
             };
 
 
-            var links = model.Links.Select(z => new Link() {ValueUrl = z, Site = newSite}).ToList();
+            var links = model.Links.Select(z => new Link() { ValueUrl = z, Site = newSite }).ToList();
 
 
             //newSite.Links = new List<Link>();
@@ -100,13 +121,14 @@ namespace WebApplication1.Controllers
 
             if (Site == null)
             {
-                return Json(new {success = false, message = "Site not found "}, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Site not found " }, JsonRequestBehavior.AllowGet);
             }
 
 
             var Test = new Test()
             {
-                Site = Site, Date = DateTime.Now
+                Site = Site,
+                Date = DateTime.Now
             };
 
             db.Tests.Add(Test);
@@ -116,7 +138,7 @@ namespace WebApplication1.Controllers
 
             BackgroundJob.Enqueue(() => testHelper.StartTest(Test.Id, Site.Id));
 
-            return Json(new {success = true, url = "/hangfire/jobs/processing" }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, url = "/hangfire/jobs/processing" }, JsonRequestBehavior.AllowGet);
         }
 
         [Authorize]
@@ -155,7 +177,7 @@ namespace WebApplication1.Controllers
                         stack.Push(link);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     // ignored
                 }
@@ -188,7 +210,7 @@ namespace WebApplication1.Controllers
         //[Authorize]
         //public ActionResult TakeUrlScreenshots()
         //{
-            
+
         //}
 
 
