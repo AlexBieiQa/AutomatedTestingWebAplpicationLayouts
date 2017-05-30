@@ -11,6 +11,7 @@ namespace WebApplication1.Entities
         public int Id { get; set; }
         public Site Site { get; set; }
         public Test Test { get; set; }
+        public virtual Link Link { get; set; }
 
         public string ImgUrl { get; set; }
         public DateTime Date { get; set; }

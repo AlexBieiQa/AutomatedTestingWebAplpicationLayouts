@@ -94,7 +94,8 @@ namespace WebApplication1.Helpers
                     Site = site,
                     Test = test,
                     Date = DateTime.Now,
-                    ScreenType = type
+                    ScreenType = type,
+                    Link = link
                 };
 
 
@@ -125,11 +126,11 @@ namespace WebApplication1.Helpers
                 if (newScreenshot.ScreenType == ScreenshotType.Reference)
                 {
                     newScreenshot.ScreenStatus = ScreenshotStatus.Valid;
-                    link.Screenshot = newScreenshot;
+
                 }
                 else
                 {
-                    if (link.Screenshot.ScreenBase64 != newScreenshot.ScreenBase64)
+                    if (db.Screenshots.FirstOrDefault(z => z.Site.Id == siteId && z.Link.Id == link.Id && z.ScreenType == ScreenshotType.Reference)?.ScreenBase64 != newScreenshot.ScreenBase64)
                         newScreenshot.ScreenStatus = ScreenshotStatus.Invalid;
                     else
                         newScreenshot.ScreenStatus = ScreenshotStatus.Valid;

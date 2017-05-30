@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,7 +14,7 @@ namespace WebApplication1.Helpers
     {
         public  static ApplicationUser GetUserById(string userId, ApplicationDbContext db)
         {
-            return db.Users.FirstOrDefault(z => z.Id == userId);
+            return db.Users.Include(z => z.Sites).FirstOrDefault(z => z.Id == userId);
         }
 
         public static string GetMd5Hash(string input)
@@ -34,6 +36,11 @@ namespace WebApplication1.Helpers
 
             // Return the hexadecimal string.
             return sBuilder.ToString();
+        }
+
+        public static string GetScrUrl(this string scrPath)
+        {
+            return @Path.Combine("/Content/Screenshots/", scrPath);
         }
 
     }

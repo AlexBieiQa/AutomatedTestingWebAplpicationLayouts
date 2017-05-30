@@ -18,6 +18,8 @@ namespace WebApplication1.Controllers
 
         public ApplicationDbContext db { get; set; } = new ApplicationDbContext();
 
+
+
         public ActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -35,17 +37,13 @@ namespace WebApplication1.Controllers
             if (user == null)
                 return Content("User not found");
 
-            var model = user.Sites.Select(s => new NewSiteModel
-            {
-                SiteId = s.Id,
-                Name = s.Name,
-                CountOfPages = s.Links.Count,
-                Url = s.Url
-
-            }).ToList();
-
+            var model = user.Sites.Where(z => z.User.Id == user.Id).ToList();
             return View(model);
         }
+
+
+
+
 
         [Authorize]
         public ActionResult SitePages(int? SiteId)
@@ -73,21 +71,60 @@ namespace WebApplication1.Controllers
         }
 
         [Authorize]
+        public ActionResult TestResult(int? SiteId)
+        {
+
+            var site = db.Sites.FirstOrDefault(z =>z.Id == SiteId);
+
+            var siteTests = site.Tests;
+
+            var lastTest = siteTests.FirstOrDefault(s => s.Date == siteTests.Max(f => f.Date));
+
+            var refTest =
+                site.Tests.FirstOrDefault(z => z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference));
+            if (lastTest == null || refTest == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var invalidScreens = new List<InvalidScreenshots>();
+
+            foreach (var scr in refTest.Screenshots)
+            {
+                var invalidScreen = lastTest.Screenshots.FirstOrDefault(z => z.ScreenStatus == ScreenshotStatus.Invalid &&  z.Link.ValueUrl == scr.Link.ValueUrl);
+                if (invalidScreen != null)
+                {
+                    invalidScreens.Add(new InvalidScreenshots()
+                    {
+                        Url = scr.Link.ValueUrl,
+                        NewImgUrl = invalidScreen.ImgUrl.GetScrUrl(),
+                        RefImgUrl = scr.ImgUrl.GetScrUrl()
+                    });
+                }
+            }
+
+            var model = new TestResultModel();
+            model.Screenshots = invalidScreens;
+            model.TestRunning = site.Links.Count != lastTest.Screenshots.Count;
+            model.Success = model.Screenshots.Count == 0 && !model.TestRunning;
+
+            return View(model);
+
+
+        }
+
+        [Authorize]
         public ActionResult Screenshots(int? SiteId)
         {
-            //var userId = User.Identity.GetUserId();
-
-            //var user = ExtensionMethods.GetUserById(userId, db);
-            //if (user == null)
-            //    return Content("User not found");
+            ;
             if (SiteId == null)
             {
                 return RedirectToAction("Index");
             }
-            var links = db.Links.Where(z => z.Site.Id == SiteId && z.Screenshot != null && z.Screenshot.ScreenType == ScreenshotType.Reference).ToList();
+            var test = db.Tests.FirstOrDefault(z => z.Site.Id == SiteId && z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference));
 
 
-            return View(links);
+            return View(test);
         }
 
 
@@ -143,7 +180,7 @@ namespace WebApplication1.Controllers
             {
                 if (!Site.Tests.Any(z => z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference)))
                 {
-                    return Json(new {success = false, message = "You need to run reference test first"},
+                    return Json(new { success = false, message = "You need to run reference test first" },
                         JsonRequestBehavior.AllowGet);
                 }
             }
@@ -156,6 +193,7 @@ namespace WebApplication1.Controllers
 
 
             var Test = new Test()
+
             {
                 Site = Site,
                 Date = DateTime.Now
@@ -168,7 +206,9 @@ namespace WebApplication1.Controllers
 
             BackgroundJob.Enqueue(() => testHelper.StartTest(Test.Id, Site.Id, type));
 
-            return Json(new { success = true, url = "/hangfire/jobs/processing" }, JsonRequestBehavior.AllowGet);
+            //return Json(new { success = true, url = "/hangfire/jobs/processing" }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, url = "/Home/TestResult?SiteId=" + Site.Id }, JsonRequestBehavior.AllowGet);
+
         }
 
         [Authorize]
@@ -182,8 +222,6 @@ namespace WebApplication1.Controllers
                 Url = "https://" + Url;
             }
 
-            if (Url.EndsWith("/"))
-                Url = Url.Substring(0, Url.Length - 1);
 
             var siteUrl = Url;
             var doc = new HtmlWeb().Load(siteUrl);
@@ -194,7 +232,7 @@ namespace WebApplication1.Controllers
                 .Where(u => !String.IsNullOrEmpty(u) && (u.Contains(siteUrl) || u.StartsWith("/")))).ToList();
 
 
-                   
+
 
 
             var stack = new Stack<string>(linkedPages);
@@ -233,15 +271,21 @@ namespace WebApplication1.Controllers
             linkedPages.RemoveAll(u => u.EndsWith(".rss"));
             linkedPages.RemoveAll(u => u.EndsWith(".gzip"));
             linkedPages.RemoveAll(u => u.EndsWith(".zip"));
-            
-            if(linkedPages.All(z => z != siteUrl))
+
+
+
+            if (linkedPages.All(z => z != siteUrl))
                 linkedPages.Add(siteUrl);
 
-            var list = linkedPages.Where(z => !z.StartsWith("/")).ToList();
+            if (siteUrl.EndsWith("/"))
+                siteUrl = siteUrl.Substring(0, siteUrl.Length - 1);
+            var list = new List<string>();
+            list.AddRange(linkedPages.Where(z => !z.StartsWith("/"))
+                    .ToList());
+            list.AddRange(linkedPages.Where(z => z.StartsWith("/")).Select(p => siteUrl + p).ToList());
 
-            list.AddRange(linkedPages.Where(k => k.StartsWith("/")).Select(z => siteUrl + z));
 
-            return Json(list, JsonRequestBehavior.AllowGet);
+            return Json(list.Distinct(), JsonRequestBehavior.AllowGet);
         }
 
         //[Authorize]

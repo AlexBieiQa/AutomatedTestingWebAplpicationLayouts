@@ -1,5 +1,5 @@
 ﻿@using WebApplication1.Entities
-@model List<WebApplication1.Models.NewSiteModel>
+@model List<WebApplication1.Entities.Site>
 
 @{
     ViewBag.Title = "Sites";
@@ -19,9 +19,17 @@
         <tr>
             <td width="100px" class="site-name"><b>@site.Name</b></td>
             <td width="160px" class="site-url">@site.Url</td>
-            <td width="120px" class="site-count">@Html.ActionLink(site.CountOfPages.ToString(), "SitePages", new { SiteId = site.SiteId })</td>
-            <td width="100px" class="site-result-link"><a class="show-tests" href="/Home/Tests">Test result</a></td>
-            <td width="100px"class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.SiteId })</td>
+            <td width="120px" class="site-count">@Html.ActionLink(site.Links.Count.ToString(), "SitePages", new { SiteId = site.Id })</td>
+            <td width="100px" class="site-result-link">@if (site.Tests.Any())
+                                                       {
+                                                           <a class="show-tests" href="/Home/TestResult?SiteId=@site.Id">Test result</a>
+                                                       }
+                                                       else
+                                                       {
+                                                           @Html.ActionLink("=>Tests", "Tests", "Home")
+                                                       }
+           </td>
+            <td width="100px"class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.Id })</td>
         </tr>
 
         @*<ul class="site-name">
