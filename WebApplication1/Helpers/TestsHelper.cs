@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -146,6 +147,18 @@ namespace WebApplication1.Helpers
             }
 
             driver.Quit();
+            //var firefoxDriverProcesses = Process.GetProcessesByName("geckodriver");
+            //foreach (var DriverProcess in firefoxDriverProcesses)
+            //{
+            //    DriverProcess.Kill();
+            //}
+            
+            var firefoxBrowserProcesses = Process.GetProcessesByName("Firefox");
+
+            foreach (var BrowserProcess in firefoxBrowserProcesses)
+            {
+                BrowserProcess.Kill();
+            }
 
         }
 

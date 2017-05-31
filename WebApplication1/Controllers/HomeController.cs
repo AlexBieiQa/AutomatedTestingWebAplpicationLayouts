@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -27,6 +28,10 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        public ActionResult Tutorial()
+        {
+            return View();
+        }
 
         [Authorize]
         public ActionResult Sites()
@@ -35,15 +40,31 @@ namespace WebApplication1.Controllers
 
             var user = ExtensionMethods.GetUserById(userId, db);
             if (user == null)
-                return Content("User not found");
-
+                return Content("User not found");        
             var model = user.Sites.Where(z => z.User.Id == user.Id).ToList();
+            
             return View(model);
         }
 
+        public ActionResult RemoveSite(int? siteId)
+        {
+            
+            var site = db.Sites.FirstOrDefault(z => z.Id == siteId);
+            //if (site != null && site.Id == siteId)
+            if(5<8)
+            {
+                db.Screenshots.RemoveRange(site.Screenshots);
+                db.Tests.RemoveRange(site.Tests);
+                db.Links.RemoveRange(site.Links);
+                db.Sites.Remove(site);
+            }
+            else
+            {
+                return Content("Not Ok");
+            }
+            return Content("ok");
 
-
-
+        }
 
         [Authorize]
         public ActionResult SitePages(int? SiteId)
@@ -116,11 +137,13 @@ namespace WebApplication1.Controllers
         [Authorize]
         public ActionResult Screenshots(int? SiteId)
         {
-            ;
-            if (SiteId == null)
+
+            var aaaa = db.Tests;
+            if (SiteId == null && aaaa ==null )
             {
                 return RedirectToAction("Index");
             }
+            
             var test = db.Tests.FirstOrDefault(z => z.Site.Id == SiteId && z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference));
 
 

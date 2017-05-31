@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "Sites";
 }
-<h2>@ViewBag.Title.</h2>
+<h2>@ViewBag.Title</h2>
 <table class="sites">
     <tr>
         <td  width="100px" class="site-name">Site Name</td>
@@ -12,13 +12,14 @@
         <td  width="120px" class="site-count">Pages count</td>
         <td  width="100px" class="site-result-link">Result</td>
         <td  width="100px" class="site-screen-link">Screenshot</td>
+        <td width="100px" class="delete-site"></td>
     </tr>
     @foreach (var site in Model)
     {
 
         <tr>
             <td width="100px" class="site-name"><b>@site.Name</b></td>
-            <td width="160px" class="site-url">@site.Url</td>
+            <td width="160px" class="site-url">@site.Url</td>ну
             <td width="120px" class="site-count">@Html.ActionLink(site.Links.Count.ToString(), "SitePages", new { SiteId = site.Id })</td>
             <td width="100px" class="site-result-link">@if (site.Tests.Any())
                                                        {
@@ -30,6 +31,14 @@
                                                        }
            </td>
             <td width="100px"class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.Id })</td>
+            <td width="100px" class="delete-site">@Html.ActionLink("Remove", "RemoveSite", "Home", new { SiteId = site.Id, @class = "btn-primary btn", @style="margin-top: 30px" })
+
+                
+                
+               
+
+            </td>
+
         </tr>
 
         @*<ul class="site-name">
