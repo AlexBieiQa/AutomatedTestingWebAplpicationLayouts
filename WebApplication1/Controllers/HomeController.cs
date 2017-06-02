@@ -50,19 +50,20 @@ namespace WebApplication1.Controllers
         {
             
             var site = db.Sites.FirstOrDefault(z => z.Id == siteId);
-            //if (site != null && site.Id == siteId)
-            if(5<8)
+            if (site != null)
+           
             {
                 db.Screenshots.RemoveRange(site.Screenshots);
                 db.Tests.RemoveRange(site.Tests);
                 db.Links.RemoveRange(site.Links);
                 db.Sites.Remove(site);
+                db.SaveChanges();
             }
             else
             {
                 return Content("Not Ok");
             }
-            return Content("ok");
+            return Redirect(Request.UrlReferrer?.PathAndQuery ?? "/Home/Index");
 
         }
 
@@ -126,9 +127,24 @@ namespace WebApplication1.Controllers
 
             var model = new TestResultModel();
             model.Screenshots = invalidScreens;
-            model.TestRunning = site.Links.Count != lastTest.Screenshots.Count;
-            model.Success = model.Screenshots.Count == 0 && !model.TestRunning;
+
+            if (site.Tests.Count == 1)
+            {
+                model.TestStatusResult = Enums.TestResult.NoNewTests;
+                return View(model);
+            }
+            if (site.Links.Count != lastTest.Screenshots.Count)
+            {
+                model.TestStatusResult = Enums.TestResult.Running;
+                return View(model);
+            }
+            if (model.Screenshots.Count == 0)
+            {
+                model.TestStatusResult = Enums.TestResult.Success;
+                return View(model);
+            }
             
+            model.TestStatusResult = Enums.TestResult.HaveFailedScreenshots;
 
             return View(model);
 
@@ -139,14 +155,15 @@ namespace WebApplication1.Controllers
         public ActionResult Screenshots(int? SiteId)
         {
 
-            var aaaa = db.Tests;
-            if (SiteId == null && aaaa ==null )
+            var tests = db.Tests;
+            if (SiteId == null && tests == null )
             {
                 return RedirectToAction("Index");
             }
             
             var test = db.Tests.FirstOrDefault(z => z.Site.Id == SiteId && z.Screenshots.Any(p => p.ScreenType == ScreenshotType.Reference));
 
+            
 
             return View(test);
         }

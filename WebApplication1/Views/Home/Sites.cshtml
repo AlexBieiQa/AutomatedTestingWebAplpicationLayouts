@@ -31,11 +31,11 @@
                 }
                 else
                 {
-                    @Html.ActionLink("=>Tests", "Tests", "Home", new { @class = "btn btn-primary" })
+                    @Html.ActionLink("=>Tests", "Tests", "Home",null, new { @class = "btn btn-primary" })
                 }
             </td>
-            <td class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.Id, @class = "btn-primary btn" })</td>
-            <td class="delete-site">@Html.ActionLink("Remove", "RemoveSite", "Home", new { SiteId = site.Id, @class = "btn-danger btn" })</td>
+            <td class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.Id} , new { @class = "btn-primary btn" })</td>
+            <td class="delete-site">@Html.ActionLink("Remove", "RemoveSite", "Home", new { siteId = site.Id }, new { @class = "btn-danger btn" })</td>
 
         </tr>
 

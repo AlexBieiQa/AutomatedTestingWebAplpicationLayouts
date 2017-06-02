@@ -214,6 +214,7 @@
     <Compile Include="Enums\ScreenshotType.cs" />
     <Compile Include="Enums\ScreenshotStatus.cs" />
     <Compile Include="Enums\StatusSitesEnum.cs" />
+    <Compile Include="Enums\TestResult.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
