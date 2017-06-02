@@ -6,38 +6,36 @@
 }
 <h2>@ViewBag.Title</h2>
 <table class="sites">
+    <thead>
     <tr>
-        <td  width="100px" class="site-name">Site Name</td>
-        <td  width="160px" class="site-url">Site Url</td>
-        <td  width="120px" class="site-count">Pages count</td>
-        <td  width="100px" class="site-result-link">Result</td>
-        <td  width="100px" class="site-screen-link">Screenshot</td>
-        <td width="100px" class="delete-site"></td>
+        <td class="site-name">Site Name</td>
+        <td class="site-url">Site Url</td>
+        <td class="site-count">Pages count</td>
+        <td class="site-result-link">Result</td>
+        <td class="site-screen-link">Screenshot</td>
+        <td class="delete-site">Delete Site</td>
     </tr>
-    @foreach (var site in Model)
-    {
+    </thead>
+    <tbody>
+        @foreach (var site in Model)
+        {
 
-        <tr>
-            <td width="100px" class="site-name"><b>@site.Name</b></td>
-            <td width="160px" class="site-url">@site.Url</td>ну
-            <td width="120px" class="site-count">@Html.ActionLink(site.Links.Count.ToString(), "SitePages", new { SiteId = site.Id })</td>
-            <td width="100px" class="site-result-link">@if (site.Tests.Any())
-                                                       {
-                                                           <a class="show-tests" href="/Home/TestResult?SiteId=@site.Id">Test result</a>
-                                                       }
-                                                       else
-                                                       {
-                                                           @Html.ActionLink("=>Tests", "Tests", "Home")
-                                                       }
-           </td>
-            <td width="100px"class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.Id })</td>
-            <td width="100px" class="delete-site">@Html.ActionLink("Remove", "RemoveSite", "Home", new { SiteId = site.Id, @class = "btn-primary btn", @style="margin-top: 30px" })
-
-                
-                
-               
-
+            <tr>
+                <td class="site-name"><b>@site.Name</b></td>
+                <td class="site-url">@site.Url</td>
+                <td class="site-count"><b>@Html.ActionLink(site.Links.Count.ToString(), "SitePages", new { SiteId = site.Id })</b></td>
+                <td class="site-result-link">
+                    @if (site.Tests.Any())
+                {
+                    <a class="show-tests btn btn-primary" href="/Home/TestResult?SiteId=@site.Id">Test result</a>
+                }
+                else
+                {
+                    @Html.ActionLink("=>Tests", "Tests", "Home", new { @class = "btn btn-primary" })
+                }
             </td>
+            <td class="site-screen-link">@Html.ActionLink("Screenshots", "Screenshots", new { SiteId = site.Id, @class = "btn-primary btn" })</td>
+            <td class="delete-site">@Html.ActionLink("Remove", "RemoveSite", "Home", new { SiteId = site.Id, @class = "btn-danger btn" })</td>
 
         </tr>
 
@@ -57,7 +55,9 @@
                     </ul>
                 </li>
             </ul>*@
-    }
+        }
+    </tbody>
+
 </table>
 @Html.ActionLink("Add new site", "AddNewSite", "Home", new { @class = "btn-primary btn", @style="margin-top: 30px" })
 

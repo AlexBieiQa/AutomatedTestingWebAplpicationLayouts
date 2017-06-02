@@ -29,3 +29,44 @@ textarea {
     width: 46px;
     height: 46px;
 }
+
+.sites {
+    max-width: 100%;
+}
+
+    .sites tr td:last-child, .sites tr td:nth-child(4), .sites tr td:nth-child(5) {
+        text-align: center;
+    }
+
+    .sites tr td:nth-child(4) a {
+        width: 100%;
+    }
+
+    .sites td, .screenshots td {
+        padding: 5px;
+        border: 1px solid grey;
+    }
+
+    .sites thead, .screenshots thead {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: white;
+        background-color: lightgray;
+    }
+
+.screenshots {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.screenshots tbody tr td:nth-child(3) {
+    text-align: center;
+}
+
+.jumbotron p a {
+    width: 120px;
+}
+ .tests{
+    margin-top: 25px;
+    text-align: center;
+}

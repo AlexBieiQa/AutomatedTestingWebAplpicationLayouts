@@ -128,6 +128,7 @@ namespace WebApplication1.Controllers
             model.Screenshots = invalidScreens;
             model.TestRunning = site.Links.Count != lastTest.Screenshots.Count;
             model.Success = model.Screenshots.Count == 0 && !model.TestRunning;
+            
 
             return View(model);
 
